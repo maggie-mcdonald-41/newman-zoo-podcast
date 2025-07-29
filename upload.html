@@ -1,1 +1,69 @@
-// Placeholder content for upload.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Upload Episode – Newman Family Zoo</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Newman Family Zoo – Upload</h1>
+    
+    <!-- Password Form -->
+    <form id="auth-form">
+      <label>Password: <input type="password" id="password" /></label>
+      <button type="submit">Enter</button>
+    </form>
+
+    <!-- Upload Form -->
+    <form id="upload-form" class="hidden" enctype="multipart/form-data">
+      <label>Episode Title:
+        <input type="text" name="title" required>
+      </label>
+
+      <label>Description:
+        <textarea name="description" required></textarea>
+      </label>
+
+      <label>Publish Date:
+        <input type="date" name="pubDate" required>
+      </label>
+
+      <label>MP3 File:
+        <input type="file" name="audio" accept=".mp3" required>
+      </label>
+
+      <button type="submit">Upload</button>
+    </form>
+
+    <p id="status"></p>
+  </div>
+
+  <script>
+    const password = "w00d$tock";
+    const form = document.getElementById("auth-form");
+    const uploadForm = document.getElementById("upload-form");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      if (document.getElementById("password").value === password) {
+        form.classList.add("hidden");
+        uploadForm.classList.remove("hidden");
+      } else {
+        alert("Wrong password");
+      }
+    });
+
+    uploadForm.addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const formData = new FormData(uploadForm);
+      const response = await fetch("/.netlify/functions/upload-episode", {
+        method: "POST",
+        body: formData
+      });
+      const result = await response.text();
+      document.getElementById("status").innerText = result;
+    });
+  </script>
+</body>
+</html>
