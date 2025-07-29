@@ -1,0 +1,11 @@
+{
+  "name": "newman-zoo-podcast",
+  "version": "1.0.0",
+  "description": "Podcast uploader and feed generator",
+  "main": "index.js",
+  "type": "commonjs",
+  "license": "MIT",
+  "dependencies": {
+    "multiparty": "^4.2.2"
+  }
+}
