@@ -5,12 +5,11 @@ const episodesList = document.getElementById("episodes-list");
 const refreshButton = document.getElementById("refresh-button");
 
 async function fetchEpisodes() {
+  if (!episodesList) return;
   episodesList.innerHTML = "<p>Loading episodes…</p>";
   try {
     const res = await fetch("/.netlify/functions/list-episodes");
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
     const data = await res.json();
     const episodes = data.episodes || [];
@@ -21,7 +20,6 @@ async function fetchEpisodes() {
     }
 
     episodesList.innerHTML = "";
-
     episodes.forEach((ep) => {
       const item = document.createElement("div");
       item.className = "episode-item";
@@ -32,13 +30,10 @@ async function fetchEpisodes() {
 
       const meta = document.createElement("p");
       meta.className = "episode-meta";
-
       const date = ep.publishedAt
         ? new Date(ep.publishedAt).toLocaleString()
         : "Unknown date";
-
       const sizeMB = ep.size ? (ep.size / (1024 * 1024)).toFixed(1) : "?";
-
       meta.textContent = `${date} • ${sizeMB} MB`;
 
       const desc = document.createElement("p");
@@ -55,7 +50,6 @@ async function fetchEpisodes() {
       item.appendChild(meta);
       if (desc.textContent) item.appendChild(desc);
       item.appendChild(audio);
-
       episodesList.appendChild(item);
     });
   } catch (err) {
@@ -65,51 +59,62 @@ async function fetchEpisodes() {
   }
 }
 
-uploadForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
+if (uploadForm) {
+  uploadForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  const fileInput = document.getElementById("audio");
-  const file = fileInput.files[0];
-  if (!file) {
-    uploadStatus.textContent = "Please choose an MP3 file.";
-    uploadStatus.className = "status error";
-    return;
-  }
+    const fileInput = document.getElementById("audio");
+    const file = fileInput.files[0];
 
-  uploadStatus.textContent = "Uploading...";
-  uploadStatus.className = "status";
-  uploadButton.disabled = true;
-
-  try {
-    const formData = new FormData(uploadForm);
-    const res = await fetch("/.netlify/functions/upload-episode", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || `HTTP ${res.status}`);
+    if (!file) {
+      uploadStatus.textContent = "Please choose an MP3 file.";
+      uploadStatus.className = "status error";
+      return;
     }
 
-    const data = await res.json();
+    // Handy debug line: shows in browser console if you want to double-check
+    console.log("Uploading file:", {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
 
-    uploadStatus.textContent = `Uploaded "${data.title}" successfully.`;
-    uploadStatus.className = "status success";
-    uploadForm.reset();
+    uploadStatus.textContent = "Uploading...";
+    uploadStatus.className = "status";
+    uploadButton.disabled = true;
 
-    // Reload latest episodes
-    await fetchEpisodes();
-  } catch (err) {
-    console.error(err);
-    uploadStatus.textContent = "Upload failed. Please try again.";
-    uploadStatus.className = "status error";
-  } finally {
-    uploadButton.disabled = false;
-  }
-});
+    try {
+      const formData = new FormData(uploadForm);
+      const res = await fetch("/.netlify/functions/upload-episode", {
+        method: "POST",
+        body: formData,
+      });
 
-refreshButton.addEventListener("click", fetchEpisodes);
+      if (!res.ok) {
+        const text = await res.text();
+        console.error("Upload error body:", text);
+        throw new Error(`HTTP ${res.status}`);
+      }
 
-// Load list on first visit
+      const data = await res.json();
+      uploadStatus.textContent = `Uploaded "${data.title}" successfully.`;
+      uploadStatus.className = "status success";
+      uploadForm.reset();
+
+      await fetchEpisodes();
+    } catch (err) {
+      console.error(err);
+      uploadStatus.textContent = "Upload failed. Please try again.";
+      uploadStatus.className = "status error";
+    } finally {
+      uploadButton.disabled = false;
+    }
+  });
+}
+
+if (refreshButton) {
+  refreshButton.addEventListener("click", fetchEpisodes);
+}
+
+// Load episodes on page load
 fetchEpisodes();

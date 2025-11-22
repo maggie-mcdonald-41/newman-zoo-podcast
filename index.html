@@ -13,45 +13,46 @@
         <p>Upload a new MP3 episode and see your most recent uploads below.</p>
       </header>
 
-      <section class="card">
-        <h2>Upload New Episode</h2>
-        <form id="upload-form">
-          <label class="field">
-            <span>Episode Title</span>
-            <input
-              type="text"
-              name="title"
-              id="title"
-              placeholder="e.g. Choosing Joy in Chaos"
-              required
-            />
-          </label>
+<section class="card">
+  <h2>Upload New Episode</h2>
+  <form id="upload-form" enctype="multipart/form-data">
+    <label class="field">
+      <span>Episode Title</span>
+      <input
+        type="text"
+        name="title"
+        id="title"
+        placeholder="e.g. Choosing Joy in Chaos"
+        required
+      />
+    </label>
 
-          <label class="field">
-            <span>Short Description (optional)</span>
-            <textarea
-              name="description"
-              id="description"
-              rows="3"
-              placeholder="What is this episode about?"
-            ></textarea>
-          </label>
+    <label class="field">
+      <span>Short Description (optional)</span>
+      <textarea
+        name="description"
+        id="description"
+        rows="3"
+        placeholder="What is this episode about?"
+      ></textarea>
+    </label>
 
-          <label class="field">
-            <span>Audio File (MP3)</span>
-            <input
-              type="file"
-              name="audio"
-              id="audio"
-              accept="audio/mpeg"
-              required
-            />
-          </label>
+    <label class="field">
+      <span>Audio File (MP3)</span>
+      <input
+        type="file"
+        name="audio"
+        id="audio"
+        accept="audio/mpeg"
+        required
+      />
+    </label>
 
-          <button type="submit" id="upload-button">Upload Episode</button>
-          <p id="upload-status" class="status"></p>
-        </form>
-      </section>
+    <button type="submit" id="upload-button">Upload Episode</button>
+    <p id="upload-status" class="status"></p>
+  </form>
+</section>
+
 
       <section class="card">
         <h2>Recent Uploads</h2>
