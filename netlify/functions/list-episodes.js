@@ -3,8 +3,35 @@ const { getStore } = require("@netlify/blobs");
 
 exports.handler = async (event, context) => {
   try {
-    const store = getStore("episodes");
-    const { blobs } = await store.list({ prefix: "audio/" });
+    let store;
+
+    // Try to access the "episodes" blob store
+    try {
+      store = getStore("episodes");
+    } catch (err) {
+      console.error("Blobs not configured or getStore failed:", err);
+      // Fallback: return empty list so the UI doesn't break
+      return {
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ episodes: [] })
+      };
+    }
+
+    let blobsResult;
+    try {
+      blobsResult = await store.list({ prefix: "audio/" });
+    } catch (err) {
+      console.error("Error listing blobs:", err);
+      // Fallback: return empty list
+      return {
+        statusCode: 200,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ episodes: [] })
+      };
+    }
+
+    const blobs = blobsResult.blobs || [];
 
     const sorted = [...blobs].sort((a, b) => {
       const aDate = (a.metadata && a.metadata.publishedAt) || a.uploadedAt || "";
@@ -31,11 +58,12 @@ exports.handler = async (event, context) => {
       body: JSON.stringify({ episodes: latest })
     };
   } catch (err) {
-    console.error("List error:", err);
+    console.error("List error (outer catch):", err);
+    // Final fallback: still return 200 so the UI doesn't crash
     return {
-      statusCode: 500,
+      statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ error: "Could not list episodes" })
+      body: JSON.stringify({ episodes: [] })
     };
   }
 };
