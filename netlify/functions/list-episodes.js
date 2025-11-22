@@ -1,19 +1,14 @@
 // netlify/functions/list-episodes.js
-import { getStore } from "@netlify/blobs";
+const { getStore } = require("@netlify/blobs");
 
-export default async (req, context) => {
+exports.handler = async (event, context) => {
   try {
     const store = getStore("episodes");
-
-    // List all blobs with prefix "audio/"
     const { blobs } = await store.list({ prefix: "audio/" });
 
-    // Sort newest first by uploadedAt or metadata.publishedAt
     const sorted = [...blobs].sort((a, b) => {
-      const aDate =
-        (a.metadata && a.metadata.publishedAt) || a.uploadedAt || "";
-      const bDate =
-        (b.metadata && b.metadata.publishedAt) || b.uploadedAt || "";
+      const aDate = (a.metadata && a.metadata.publishedAt) || a.uploadedAt || "";
+      const bDate = (b.metadata && b.metadata.publishedAt) || b.uploadedAt || "";
       return bDate.localeCompare(aDate);
     });
 
@@ -26,19 +21,21 @@ export default async (req, context) => {
         description: (blob.metadata && blob.metadata.description) || "",
         publishedAt:
           (blob.metadata && blob.metadata.publishedAt) || blob.uploadedAt,
-        size: blob.size,
+        size: blob.size
       };
     });
 
-    return new Response(
-      JSON.stringify({ episodes: latest }),
-      { status: 200, headers: { "content-type": "application/json" } }
-    );
+    return {
+      statusCode: 200,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ episodes: latest })
+    };
   } catch (err) {
     console.error("List error:", err);
-    return new Response(
-      JSON.stringify({ error: "Could not list episodes" }),
-      { status: 500, headers: { "content-type": "application/json" } }
-    );
+    return {
+      statusCode: 500,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error: "Could not list episodes" })
+    };
   }
 };

@@ -63,7 +63,12 @@ if (uploadForm) {
   uploadForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    const titleInput = document.getElementById("title");
+    const descriptionInput = document.getElementById("description");
     const fileInput = document.getElementById("audio");
+
+    const title = titleInput.value.trim();
+    const description = descriptionInput.value.trim();
     const file = fileInput.files[0];
 
     if (!file) {
@@ -72,31 +77,51 @@ if (uploadForm) {
       return;
     }
 
-    // Handy debug line: shows in browser console if you want to double-check
-    console.log("Uploading file:", {
-      name: file.name,
-      size: file.size,
-      type: file.type,
-    });
-
-    uploadStatus.textContent = "Uploading...";
+    uploadStatus.textContent = "Preparing upload…";
     uploadStatus.className = "status";
     uploadButton.disabled = true;
 
     try {
-      const formData = new FormData(uploadForm);
+      // Convert file to base64
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8 = new Uint8Array(arrayBuffer);
+      let binary = "";
+      for (let i = 0; i < uint8.length; i++) {
+        binary += String.fromCharCode(uint8[i]);
+      }
+      const fileBase64 = btoa(binary);
+
+      uploadStatus.textContent = "Uploading…";
+
+      const payload = {
+        title,
+        description,
+        fileName: file.name,
+        fileType: file.type || "audio/mpeg",
+        fileBase64
+      };
+
       const res = await fetch("/.netlify/functions/upload-episode", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
       });
 
-      if (!res.ok) {
-        const text = await res.text();
-        console.error("Upload error body:", text);
-        throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      let data = null;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.error("Non-JSON response:", text);
       }
 
-      const data = await res.json();
+      if (!res.ok) {
+        console.error("Upload failed response:", text);
+        throw new Error(data?.error || `HTTP ${res.status}`);
+      }
+
       uploadStatus.textContent = `Uploaded "${data.title}" successfully.`;
       uploadStatus.className = "status success";
       uploadForm.reset();
@@ -116,5 +141,4 @@ if (refreshButton) {
   refreshButton.addEventListener("click", fetchEpisodes);
 }
 
-// Load episodes on page load
 fetchEpisodes();

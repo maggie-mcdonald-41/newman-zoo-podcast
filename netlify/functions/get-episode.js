@@ -1,13 +1,11 @@
 // netlify/functions/get-episode.js
-import { getStore } from "@netlify/blobs";
+const { getStore } = require("@netlify/blobs");
 
-export default async (req, context) => {
+exports.handler = async (event, context) => {
   try {
-    const url = new URL(req.url);
-    const id = url.searchParams.get("id");
-
+    const id = event.queryStringParameters && event.queryStringParameters.id;
     if (!id) {
-      return new Response("Missing id", { status: 400 });
+      return { statusCode: 400, body: "Missing id" };
     }
 
     const store = getStore("episodes");
@@ -15,18 +13,26 @@ export default async (req, context) => {
 
     const file = await store.get(key);
     if (!file) {
-      return new Response("Not found", { status: 404 });
+      return { statusCode: 404, body: "Not found" };
     }
 
-    return new Response(file, {
-      status: 200,
+    // file should be a Buffer in Node
+    const buffer = Buffer.isBuffer(file) ? file : Buffer.from(file);
+
+    return {
+      statusCode: 200,
       headers: {
-        "content-type": "audio/mpeg",
-        "cache-control": "public, max-age=31536000",
+        "Content-Type": "audio/mpeg",
+        "Cache-Control": "public, max-age=31536000"
       },
-    });
+      body: buffer.toString("base64"),
+      isBase64Encoded: true
+    };
   } catch (err) {
     console.error("Get episode error:", err);
-    return new Response("Server error", { status: 500 });
+    return {
+      statusCode: 500,
+      body: "Server error"
+    };
   }
 };

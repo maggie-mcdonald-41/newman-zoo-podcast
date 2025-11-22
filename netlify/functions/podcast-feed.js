@@ -1,8 +1,8 @@
 // netlify/functions/podcast-feed.js
-import { getStore } from "@netlify/blobs";
+const { getStore } = require("@netlify/blobs");
 
 function escapeXml(str = "") {
-  return str
+  return String(str)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
@@ -10,33 +10,25 @@ function escapeXml(str = "") {
     .replace(/'/g, "&apos;");
 }
 
-export default async (req, context) => {
+exports.handler = async (event, context) => {
   try {
     const store = getStore("episodes");
-
-    // Get all audio blobs
     const { blobs } = await store.list({ prefix: "audio/" });
 
-    // Sort newest first
     const sorted = [...blobs].sort((a, b) => {
-      const aDate =
-        (a.metadata && a.metadata.publishedAt) || a.uploadedAt || "";
-      const bDate =
-        (b.metadata && b.metadata.publishedAt) || b.uploadedAt || "";
+      const aDate = (a.metadata && a.metadata.publishedAt) || a.uploadedAt || "";
+      const bDate = (b.metadata && b.metadata.publishedAt) || b.uploadedAt || "";
       return bDate.localeCompare(aDate);
     });
 
-    const url = new URL(req.url);
-    const origin = url.origin;
+    const origin = `${event.headers["x-forwarded-proto"] || "https"}://${event.headers.host}`;
 
-    // Channel metadata – tweak these for your show
     const podcastTitle = "Newman Family Zoo";
     const podcastDescription =
       "A real-world podcast about life, faith, and finding your purpose. Dr. Rusty Newman blends wisdom, humor, and heart to help you make Godly choices, raise strong families, and become your best self — one story at a time.";
-    const podcastLink = origin; // or your custom domain when you add one
+    const podcastLink = origin;
     const podcastLanguage = "en-us";
     const podcastAuthor = "Dr. Rusty Newman";
-    const podcastEmail = "example@example.com"; // change this later if you want
 
     const itemsXml = sorted
       .map((blob) => {
@@ -53,7 +45,6 @@ export default async (req, context) => {
           : new Date().toUTCString();
 
         const size = blob.size || 0;
-
         const audioUrl = `${origin}/.netlify/functions/get-episode?id=${encodeURIComponent(
           id
         )}`;
@@ -91,15 +82,19 @@ ${itemsXml}
   </channel>
 </rss>`;
 
-    return new Response(rssXml, {
-      status: 200,
+    return {
+      statusCode: 200,
       headers: {
-        "content-type": "application/rss+xml; charset=utf-8",
-        "cache-control": "public, max-age=300", // 5 min cache
+        "Content-Type": "application/rss+xml; charset=utf-8",
+        "Cache-Control": "public, max-age=300"
       },
-    });
+      body: rssXml
+    };
   } catch (err) {
     console.error("Feed error:", err);
-    return new Response("Feed error", { status: 500 });
+    return {
+      statusCode: 500,
+      body: "Feed error"
+    };
   }
 };
