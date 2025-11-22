@@ -1,97 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Newman Family Zoo – Episode Uploader</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <div class="container">
-    <h1>Newman Family Zoo – Upload</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Newman Zoo Podcast Uploader</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="header">
+        <h1>Newman Zoo Podcast – Episode Uploader</h1>
+        <p>Upload a new MP3 episode and see your most recent uploads below.</p>
+      </header>
 
-    <!-- Password gate (simple front-end lock) -->
-    <form id="auth-form">
-      <label for="password">Password</label>
-      <input type="password" id="password" />
-      <button type="submit">Enter</button>
-    </form>
+      <section class="card">
+        <h2>Upload New Episode</h2>
+        <form id="upload-form">
+          <label class="field">
+            <span>Episode Title</span>
+            <input
+              type="text"
+              name="title"
+              id="title"
+              placeholder="e.g. Choosing Joy in Chaos"
+              required
+            />
+          </label>
 
-    <!-- Upload form (hidden until password is correct) -->
-    <form id="upload-form" class="hidden">
-      <label>
-        Episode Title
-        <input type="text" name="title" required />
-      </label>
+          <label class="field">
+            <span>Short Description (optional)</span>
+            <textarea
+              name="description"
+              id="description"
+              rows="3"
+              placeholder="What is this episode about?"
+            ></textarea>
+          </label>
 
-      <label>
-        Episode Description
-        <textarea name="description" rows="4" required></textarea>
-      </label>
+          <label class="field">
+            <span>Audio File (MP3)</span>
+            <input
+              type="file"
+              name="audio"
+              id="audio"
+              accept="audio/mpeg"
+              required
+            />
+          </label>
 
-      <label>
-        Publish Date
-        <input type="date" name="pubDate" required />
-      </label>
+          <button type="submit" id="upload-button">Upload Episode</button>
+          <p id="upload-status" class="status"></p>
+        </form>
+      </section>
 
-      <label>
-        Audio File (MP3 only)
-        <input
-          type="file"
-          name="audio"
-          accept="audio/mpeg,audio/mp3"
-          required
-        />
-      </label>
+      <section class="card">
+        <h2>Recent Uploads</h2>
+        <button id="refresh-button" class="secondary-button">
+          Refresh List
+        </button>
+        <div id="episodes-list" class="episodes-list">
+          <!-- Episodes populated by main.js -->
+        </div>
+      </section>
+    </main>
 
-      <button type="submit">Upload Episode</button>
-    </form>
-<p>
-  <a href="episodes.html">🎧 View Uploaded Episodes</a>
-</p>
-
-    <p id="status"></p>
-  </div>
-
-  <script>
-    const authForm = document.getElementById("auth-form");
-    const uploadForm = document.getElementById("upload-form");
-    const statusEl = document.getElementById("status");
-
-    // Change this to whatever password you want on the front-end
-    const FRONTEND_PASSWORD = "NEWMANZOO2025";
-
-    authForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const inputPw = document.getElementById("password").value.trim();
-      if (inputPw === FRONTEND_PASSWORD) {
-        authForm.classList.add("hidden");
-        uploadForm.classList.remove("hidden");
-      } else {
-        alert("Incorrect password.");
-      }
-    });
-
-    uploadForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      statusEl.textContent = "Uploading...";
-
-      const formData = new FormData(uploadForm);
-
-      try {
-        const res = await fetch("/.netlify/functions/upload-episode", {
-          method: "POST",
-          body: formData,
-        });
-        const text = await res.text();
-        statusEl.textContent = text;
-
-        if (res.ok) {
-          uploadForm.reset();
-        }
-      } catch (err) {
-        statusEl.textContent = "Upload failed: " + err.message;
-      }
-    });
-  </script>
-</body>
+    <script src="./main.js"></script>
+  </body>
 </html>

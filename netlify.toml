@@ -1,0 +1,15 @@
+[build]
+  publish = "."
+  functions = "netlify/functions"
+
+# API routes (if you already had this, keep it)
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+# Podcast RSS feed
+[[redirects]]
+  from = "/feed.xml"
+  to = "/.netlify/functions/podcast-feed"
+  status = 200

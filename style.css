@@ -1,0 +1,134 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #0b1821;
+  color: #f5f9ff;
+}
+
+.container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.header {
+  margin-bottom: 1.5rem;
+}
+
+.card {
+  background: #102331;
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+h1,
+h2 {
+  margin-top: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.75rem;
+}
+
+.field span {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+input[type="text"],
+input[type="file"],
+textarea {
+  border-radius: 0.5rem;
+  border: 1px solid #28435a;
+  padding: 0.5rem 0.6rem;
+  font-size: 0.95rem;
+  background: #08141e;
+  color: #f5f9ff;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 1.2rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+#upload-button {
+  background: #ffb800;
+  color: #1a1300;
+}
+
+#upload-button:disabled {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.secondary-button {
+  background: #1f3a4d;
+  color: #f5f9ff;
+  margin-bottom: 0.75rem;
+}
+
+.status {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+.status.error {
+  color: #ff8f85;
+}
+
+.status.success {
+  color: #84ebe6;
+}
+
+.episodes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.episode-item {
+  border-radius: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  background: #0a1924;
+  border: 1px solid #22384b;
+}
+
+.episode-title {
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.episode-meta {
+  font-size: 0.8rem;
+  opacity: 0.8;
+  margin-bottom: 0.25rem;
+}
+
+.episode-description {
+  font-size: 0.85rem;
+  margin-bottom: 0.35rem;
+}
+
+audio {
+  width: 100%;
+  margin-top: 0.25rem;
+}

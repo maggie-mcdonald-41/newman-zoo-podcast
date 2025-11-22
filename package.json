@@ -1,11 +1,12 @@
 {
   "name": "newman-zoo-podcast",
   "version": "1.0.0",
-  "description": "Podcast uploader and feed generator",
-  "main": "index.js",
-  "type": "commonjs",
-  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "echo \"No build step\"",
+    "dev": "netlify dev"
+  },
   "dependencies": {
-    "multiparty": "^4.2.2"
+    "@netlify/blobs": "^8.0.0"
   }
 }
