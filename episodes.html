@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Newman Family Zoo – Episodes</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Page-specific polish (keeps your main styles.css untouched) */
+    .episodes-container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 1.5rem;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .episodes-header {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .episodes-header h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .episodes-header p {
+      margin: 0;
+      font-size: 0.95rem;
+      opacity: 0.85;
+    }
+
+    .episodes-header a {
+      font-size: 0.9rem;
+      text-decoration: none;
+    }
+
+    .episode-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .episode-card {
+      padding: 1rem 1.1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      background: #f9fbfc;
+    }
+
+    .episode-title {
+      margin: 0 0 0.35rem;
+      font-size: 1.15rem;
+      font-weight: 700;
+    }
+
+    .episode-meta {
+      margin: 0 0 0.6rem;
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    .episode-description {
+      margin: 0 0 0.7rem;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .episode-audio {
+      width: 100%;
+      margin-top: 0.25rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      font-size: 0.95rem;
+      padding: 1.5rem 0.5rem;
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+  <div class="episodes-container">
+    <header class="episodes-header">
+      <h1>Newman Family Zoo Episodes</h1>
+      <p>Listen to uploaded episodes and confirm everything is working as expected.</p>
+      <a href="index.html">⬅ Back to Upload Page</a>
+    </header>
+
+    <section id="episodes-root">
+      <p class="empty-state">Loading episodes…</p>
+    </section>
+  </div>
+
+  <script src="scripts/episodes.js"></script>
+</body>
+</html>
